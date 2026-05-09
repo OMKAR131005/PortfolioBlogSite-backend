@@ -3,7 +3,9 @@ package com.omkar.porfolio_backend.controllers;
 import com.omkar.porfolio_backend.Entity.*;
 import com.omkar.porfolio_backend.Repository.UserRepository;
 import com.omkar.porfolio_backend.dto.ApiResponse;
+import com.omkar.porfolio_backend.dto.ChatRequest;
 import com.omkar.porfolio_backend.services.BlogService;
+import com.omkar.porfolio_backend.services.GeminiService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -15,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,11 +25,10 @@ import java.util.List;
 @Tag(name = "Admin Blog API", description = "Admin endpoints — requires JWT")
 @SecurityRequirement(name = "bearerAuth")
 public class BlogController {
-
     private final BlogService blogService;
     private final UserRepository userRepository;
     private final PasswordEncoder encoder;
-
+    private final GeminiService geminiService;
     @Operation(summary = "Create a new blog draft")
     @PostMapping("/create")
     public ResponseEntity<ApiResponse<Blog>> createBlog(@RequestBody CreateBlog blog) {
@@ -77,9 +79,18 @@ public class BlogController {
         User user = new User();
         user.setUsername(request.getUsername());
         user.setPassword(encoder.encode(request.getPassword()));
-        user.setRole(Roles.Admin);
+        user.setRole(Roles.ADMIN);
         userRepository.save(user);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success("Admin registered", null));
     }
+
+
+    @PostMapping("/chat")
+    public ResponseEntity<?> chat(@RequestBody ChatRequest request) {
+        String reply = geminiService.chat(request.getMessage(),request.getHistory());
+        return ResponseEntity.ok(Map.of("reply", reply));
+    }
+
+
 }

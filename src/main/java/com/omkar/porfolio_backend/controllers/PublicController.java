@@ -2,7 +2,9 @@ package com.omkar.porfolio_backend.controllers;
 
 import com.omkar.porfolio_backend.Entity.Blog;
 import com.omkar.porfolio_backend.dto.ApiResponse;
+import com.omkar.porfolio_backend.dto.ChatRequest;
 import com.omkar.porfolio_backend.services.BlogService;
+import com.omkar.porfolio_backend.services.GeminiService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
