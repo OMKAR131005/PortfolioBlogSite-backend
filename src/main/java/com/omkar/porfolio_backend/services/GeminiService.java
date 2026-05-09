@@ -20,27 +20,33 @@ public class GeminiService {
     public GeminiService(ChatClient.Builder builder) {
         this.chatClient = builder.build();
     }
-
     public String chat(String userMessage, List<Map<String, String>> history) {
-        List<Message> messages = new ArrayList<>();
+        try {
 
-        // add previous messages
-        if (history != null) {
-            for (Map<String, String> msg : history) {
-                if ("user".equals(msg.get("role"))) {
-                    messages.add(new UserMessage(msg.get("text")));
-                } else {
-                    messages.add(new AssistantMessage(msg.get("text")));
+            List<Message> messages = new ArrayList<>();
+
+
+            if (history != null) {
+                for (Map<String, String> msg : history) {
+                    if ("user".equals(msg.get("role"))) {
+                        messages.add(new UserMessage(msg.get("text")));
+                    } else {
+                        messages.add(new AssistantMessage(msg.get("text")));
+                    }
                 }
             }
+
+
+            messages.add(new UserMessage(userMessage));
+
+            return chatClient.prompt()
+                    .messages(messages)
+                    .call()
+                    .content();
+        } catch (Exception e) {
+            System.err.println("Groq error: " + e.getMessage());
+            throw e;
         }
-
-        // add current message
-        messages.add(new UserMessage(userMessage));
-
-        return chatClient.prompt()
-                .messages(messages)
-                .call()
-                .content();
     }
+
 }
