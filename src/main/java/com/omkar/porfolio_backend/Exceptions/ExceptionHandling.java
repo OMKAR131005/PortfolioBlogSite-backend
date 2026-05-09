@@ -33,8 +33,11 @@ public class ExceptionHandling {
                 .body(ApiResponse.error(errors));
     }
 
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Void>> handleGeneral(Exception ex) {
+        System.err.println("GLOBAL ERROR: " + ex.getMessage());
+        ex.printStackTrace();
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ApiResponse.error("An unexpected error occurred"));
     }
